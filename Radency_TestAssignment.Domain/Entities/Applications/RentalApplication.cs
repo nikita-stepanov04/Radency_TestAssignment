@@ -31,7 +31,7 @@ namespace Radency_TestAssignment.Domain.Entities.Applications
 
         public List<ApplicationSectionState> SectionStates { get; set; } = new List<ApplicationSectionState>();
 
-        public List<RentalApplication> Applicants { get; set; } = new List<RentalApplication>();
+        public List<User> Applicants { get; set; } = new List<User>();
 
         public List<ManagerNote> ManagerNotes { get; set; } = new List<ManagerNote>();
 

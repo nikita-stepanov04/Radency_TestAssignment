@@ -7,6 +7,6 @@ namespace Radency_TestAssignment.Domain.Entities.Identity
     {
         public string FullName { get; set; } = string.Empty;
 
-        public List<RentalApplication> Applicants { get; set; } = new List<RentalApplication>();
+        public List<RentalApplication> Applications { get; set; } = new List<RentalApplication>();
     }
 }
