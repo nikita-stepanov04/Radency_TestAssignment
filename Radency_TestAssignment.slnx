@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Radency_TestAssignment.Application/Radency_TestAssignment.Application.csproj" />
+  <Project Path="Radency_TestAssignment.Domain/Radency_TestAssignment.Domain.csproj" />
+  <Project Path="Radency_TestAssignment.Infrastructure/Radency_TestAssignment.Infrastructure.csproj" />
+  <Project Path="Radency_TestAssignment.Web/Radency_TestAssignment.Web.csproj" />
+</Solution>
