@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Radency_TestAssignment.Application.IBusinessServices.Users;
 using Radency_TestAssignment.Domain.DI;
-using Radency_TestAssignment.Domain.Entities.Identity;
+using Radency_TestAssignment.Web.BusinessServices;
+using Radency_TestAssignment.Web.Identity;
 
 namespace Radency_TestAssignment.Web.DI
 {
@@ -8,13 +9,12 @@ namespace Radency_TestAssignment.Web.DI
     {
         public IServiceCollection SetupDI(IServiceCollection services, IConfiguration config)
         {
-            var identityBuilder = services.AddIdentity<User, Role>(options =>
-                {
-                    options.User.RequireUniqueEmail = true;
-                    options.Password.RequiredLength = 8;
-                })
-                .AddDefaultTokenProviders();
-            
+            services.AddAutoMapper(cfg => { }, typeof(WebDIManager).Assembly);
+
+            services.AddScoped<IAccountBS, AccountBS>();
+
+            var identityManager = new IdentityManager();
+            identityManager.SetupDI(services, config);
 
             return services;
         }

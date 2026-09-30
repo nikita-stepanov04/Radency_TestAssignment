@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Login";
+    Layout = "_FormPageLayout";
+}
+@model RegistrationViewModel
+
+<form asp-action="Registration" method="post">
+
+    <partial name="Forms/Headers/FormHeader" model="@("Registration")" />
+
+    @Html.EditorFor(m => m.Email, "Inputs/StringInput")
+    @Html.EditorFor(m => m.FullName, "Inputs/StringInput")
+    @Html.EditorFor(m => m.Password, "Inputs/StringInput")
+    @Html.EditorFor(m => m.Role, "Selectors/DefaultSelector", new { Items = Model.Roles })
+
+    <div class="d-grid mt-4 mb-2">
+        <partial name="Forms/Buttons/SubmitButton" model="@("Register")" />
+        <partial name="Forms/Buttons/RedirectLink"
+                 model="@(new RedirectLinkViewModel("Log In", Url.Action("Login", "User")!))" />
+    </div>
+</form>

@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "Login";
+    Layout = "_FormPageLayout";
+}
+@model LogInViewModel
+
+<form asp-action="Login" method="post">
+
+    <partial name="Forms/Headers/FormHeader" model="@("Log In")" />
+
+    @Html.EditorFor(m => m.Email, "Inputs/StringInput")
+    @Html.EditorFor(m => m.Password, "Inputs/StringInput")
+
+    <div class="d-grid mt-4 mb-2">
+        <partial name="Forms/Buttons/SubmitButton" model="@("Log In")" />
+        <partial name="Forms/Buttons/RedirectLink"
+                 model="@(new RedirectLinkViewModel("Registration", Url.Action("Registration", "User")!))" />
+    </div>
+</form>

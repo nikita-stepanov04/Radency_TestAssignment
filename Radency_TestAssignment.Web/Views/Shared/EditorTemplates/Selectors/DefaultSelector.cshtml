@@ -1,0 +1,11 @@
+﻿@model string?
+
+@{
+    var items = (IEnumerable<SelectListItem>)ViewData["Items"]!;
+}
+
+<div class="mb-3">
+    <label asp-for="@Model" class="form-label">@Html.DisplayNameForModel()</label>
+    @Html.DropDownListFor(m => m, items, new { @class = "form-select" })
+    @Html.ValidationMessageFor(m => m, "", new { @class = "text-danger" })
+</div>

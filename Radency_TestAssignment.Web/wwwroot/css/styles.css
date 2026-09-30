@@ -1,0 +1,44 @@
+﻿.page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.bg-lightblue {
+    background: linear-gradient(45deg, rgba(1,126,190,1) 0%, rgba(72,193,255,1) 50%, rgba(138,216,255,1) 100%);
+}
+
+.content {
+    flex: 1;
+}
+
+.main-block {
+    background-color: rgb(248, 249, 250);
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 5px 8px rgba(56, 56, 56, 0.1);
+}
+
+.live-alert-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+}
+
+.alert-show {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+.alert-hide {
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
