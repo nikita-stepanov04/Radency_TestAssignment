@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Radency_TestAssignment.Application.DTOs;
+using Radency_TestAssignment.Domain.Entities.Catalog;
 using Radency_TestAssignment.Web.Models.Properties;
 
 namespace Radency_TestAssignment.Web.AutoMapper.Profiles
@@ -8,7 +9,8 @@ namespace Radency_TestAssignment.Web.AutoMapper.Profiles
     {
         public PropertyProfiles()
         {
-            CreateMap<PropertyFormViewModel, AddPropertyDTO>().ReverseMap();
+            CreateMap<PropertyFormViewModel, SavePropertyDTO>().ReverseMap();
+            CreateMap<PropertyFormViewModel, Property>().ReverseMap();
         }
     }
 }

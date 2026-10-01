@@ -2,7 +2,7 @@
 
 <nav class="navbar navbar-expand-sm bg-body-tertiary shadow-sm">
     <div class="container-fluid">
-        <a class="navbar-brand fw-bold text-primary" href="#">Radency_PMS</a>
+        <a class="navbar-brand fw-bold text-dark" href="/">Radency_PMS</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -32,19 +32,11 @@
                     {
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Property" asp-action="Index">
-                                <i class="fa-solid fa-city me-1"></i> Properties
+                                <i class="fa-solid fa-house me-1"></i> Properties
                             </a>
                         </li>
                     }
                 </ul>
-
-                @if (Model.IsManager)
-                {
-                    <button type="button" class="btn btn-success me-3"
-                            data-modal-url="@Url.Action("Create", "Property")">
-                        <i class="fa-solid fa-plus"></i>
-                    </button>
-                }
 
                 <form asp-controller="User" asp-action="Logout" method="post" class="d-inline">
                     <button class="btn btn-outline-secondary">

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Radency_TestAssignment.Web.Models.Shared;
 
 namespace Radency_TestAssignment.Web.Controllers
 {
@@ -21,5 +22,7 @@ namespace Radency_TestAssignment.Web.Controllers
             TempData["AlertMessage"] = message;
             TempData["AlertType"] = alertType;
         }
+
+        public const string ModalBindingPrefix = nameof(ModalFormViewModel<>.FormModel);
     }
 }

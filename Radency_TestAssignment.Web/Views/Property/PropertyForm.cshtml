@@ -3,6 +3,8 @@
     Layout = "Forms/Modals/ModalLayout";
 }
 
-@Html.EditorFor(m => m.FormModel.Name, "Inputs/StringInput")
-@Html.EditorFor(m => m.FormModel.City, "Inputs/StringInput")
-@Html.EditorFor(m => m.FormModel.Address, "Inputs/StringInput")
+@Html.HiddenFor(m => m.FormModel.ID)
+
+@Html.EditorFor(m => m.FormModel.Name, "Inputs/DefaultInput")
+@Html.EditorFor(m => m.FormModel.City, "Inputs/DefaultInput")
+@Html.EditorFor(m => m.FormModel.Address, "Inputs/DefaultInput")

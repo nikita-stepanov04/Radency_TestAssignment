@@ -2,4 +2,16 @@
     Layout = "_MainLayout";
 }
 
-<p>Properties</p>
+<div class="container mt-2">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h3 mb-0">Properties</h2>
+        <button type="button" class="btn btn-success me-3"
+                data-modal-url="@Url.Action("Create", "Property")">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+    </div>
+
+    <div id="properties-list" data-refresh-url="@Url.Action("List", "Property", new { page = 1 })">
+        @await Component.InvokeAsync("PropertiesList", new { page = 1 })
+    </div>
+</div>

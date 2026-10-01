@@ -78,10 +78,22 @@
 
     modalEl.addEventListener('hidden.bs.modal', () => { content.innerHTML = ''; });
 
-    document.addEventListener('modal:saved', e => {
-        const result = e.detail.result;
-        if (result.message) {
-            showAlert(result.message, result.type ?? "alert-success");
+    document.addEventListener("modal:saved", async e => {
+        const { message, type } = e.detail.result ?? {};
+        const hasBlocks = document.querySelector("[data-refresh-url]") !== null;
+
+        if (!hasBlocks) {
+            if (message) showAlertAfterReload(message, type);
+            location.reload();
+            return;
+        }
+
+        if (message) showAlert(message, type);
+
+        try {
+            await BlockRefresh.refreshAll();
+        } catch {
+            showAlert("Saved, but the list could not be refreshed. Reload the page.", "warning");
         }
     });
 })();

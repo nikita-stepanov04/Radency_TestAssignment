@@ -1,0 +1,14 @@
+﻿@model ModalFormViewModel<DeleteItemViewModel>
+
+@{
+    Layout = "Forms/Modals/ModalLayout";
+}
+
+@Html.HiddenFor(m => m.FormModel.ID)
+@Html.HiddenFor(m => m.FormModel.Name)
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+<p class="mb-0">
+    Are you sure you want to delete <strong>@Model.FormModel.Name</strong>?
+    This action cannot be undone.
+</p>

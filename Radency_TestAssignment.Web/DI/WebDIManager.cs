@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using Radency_TestAssignment.Application.IBusinessServices.Users;
+﻿using Radency_TestAssignment.Application.IBusinessServices.Users;
 using Radency_TestAssignment.Domain.DI;
 using Radency_TestAssignment.Domain.Entities.Identity;
 using Radency_TestAssignment.Web.BusinessServices;
@@ -11,7 +10,7 @@ namespace Radency_TestAssignment.Web.DI
     {
         public IServiceCollection SetupDI(IServiceCollection services, IConfiguration config)
         {
-            services.AddControllersWithViews().AddJsonOptions(opts => 
+            services.AddControllersWithViews().AddJsonOptions(opts =>
             {
                 opts.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
             });
@@ -37,9 +36,14 @@ namespace Radency_TestAssignment.Web.DI
 
             services.AddRouting(options =>
             {
-                options.LowercaseUrls = true;          
-                options.AppendTrailingSlash = false;   
+                options.LowercaseUrls = true;
+                options.AppendTrailingSlash = false;
             });
+
+            services.AddOptions<PaginationSettings>()
+                .BindConfiguration("Pagination")
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
 
             return services;
         }

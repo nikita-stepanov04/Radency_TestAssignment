@@ -8,9 +8,9 @@
 
     <partial name="Forms/Headers/FormHeader" model="@("Registration")" />
 
-    @Html.EditorFor(m => m.Email, "Inputs/StringInput")
-    @Html.EditorFor(m => m.FullName, "Inputs/StringInput")
-    @Html.EditorFor(m => m.Password, "Inputs/StringInput")
+    @Html.EditorFor(m => m.Email, "Inputs/DefaultInput")
+    @Html.EditorFor(m => m.FullName, "Inputs/DefaultInput")
+    @Html.EditorFor(m => m.Password, "Inputs/DefaultInput")
     @Html.EditorFor(m => m.Role, "Selectors/DefaultSelector", new { Items = Model.Roles })
 
     <div class="d-grid mt-4 mb-2">

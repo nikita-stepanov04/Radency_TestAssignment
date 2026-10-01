@@ -25,6 +25,7 @@ namespace Radency_TestAssignment.Infrastructure.EFRepositories
 #endif
             });
 
+            services.AddScoped<IUnitRepository, EFUnitRepository>();
             services.AddScoped<IPropertyRepository, EFPropertyRepository>();
 
             new IdentityBuilder(typeof(User), typeof(Role), services)

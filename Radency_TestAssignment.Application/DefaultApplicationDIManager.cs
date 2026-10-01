@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Radency_TestAssignment.Application.BusinessServices;
+using Radency_TestAssignment.Application.IBusinessServices;
 using Radency_TestAssignment.Application.IBusinessServices.Properties;
 using Radency_TestAssignment.Domain.DI;
 
@@ -12,6 +13,7 @@ namespace Radency_TestAssignment.Application
         {
             services.AddAutoMapper(cfg => { }, typeof(DefaultApplicationDIManager).Assembly);
 
+            services.AddScoped<IUnitBS, UnitBS>();
             services.AddScoped<IPropertyBS, PropertyBS>();
 
             return services;

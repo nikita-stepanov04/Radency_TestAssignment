@@ -1,0 +1,12 @@
+﻿@model ModalFormViewModel<UnitFormViewModel>
+@{
+    Layout = "Forms/Modals/ModalLayout";
+}
+
+@Html.HiddenFor(m => m.FormModel.ID)
+@Html.HiddenFor(m => m.FormModel.PropertyID)
+
+@Html.EditorFor(m => m.FormModel.Number, "Inputs/DefaultInput")
+@Html.EditorFor(m => m.FormModel.UnitTypeID, "Selectors/DefaultSelector", new { Items = Model.FormModel.UnitTypes })
+@Html.EditorFor(m => m.FormModel.Bedrooms, "Inputs/DefaultInput")
+@Html.EditorFor(m => m.FormModel.MonthlyRent, "Inputs/DefaultInput")

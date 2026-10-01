@@ -8,8 +8,8 @@
 
     <partial name="Forms/Headers/FormHeader" model="@("Log In")" />
 
-    @Html.EditorFor(m => m.Email, "Inputs/StringInput")
-    @Html.EditorFor(m => m.Password, "Inputs/StringInput")
+    @Html.EditorFor(m => m.Email, "Inputs/DefaultInput")
+    @Html.EditorFor(m => m.Password, "Inputs/DefaultInput")
 
     <div class="d-grid mt-4 mb-2">
         <partial name="Forms/Buttons/SubmitButton" model="@("Log In")" />

@@ -12,6 +12,13 @@
 
     <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-        <partial name="Forms/Buttons/SubmitButton" model="@Model.SubmitText" />
+        @if (Model.IsDanger)
+        {
+            <partial name="Forms/Buttons/DeleteButton" model="@Model.SubmitText" />
+        }
+        else
+        {
+            <partial name="Forms/Buttons/SubmitButton" model="@Model.SubmitText" />                
+        }
     </div>
 </form>

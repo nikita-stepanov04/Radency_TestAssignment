@@ -1,0 +1,45 @@
+﻿@model PagedResult<PropertyListItemDTO>
+@{
+    var pager = new PagerViewModel(
+        Model.Page,
+        Model.TotalPages,
+        n => Url.Action("List", "Property", new { page = n }));
+}
+
+@if (!Model.Items.Any())
+{
+    <partial name="Lists/EmptyState" model="@("No properties yet.")" />
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>City</th>
+                <th>Address</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model.Items)
+            {
+                var actions = new RowActionsViewModel(
+                    Url.Action("Edit", "Property", new { id = p.ID })!,
+                    Url.Action("Delete", "Property", new { id = p.ID })!,
+                    Url.Action("Details", "Property", new { id = p.ID }));
+
+                <tr>
+                    <td>@p.Name</td>
+                    <td>@p.City</td>
+                    <td>@p.Address</td>
+                    <td class="text-end">
+                        <partial name="Lists/RowActions" model="actions" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <partial name="Lists/Pager" model="pager" />
+}

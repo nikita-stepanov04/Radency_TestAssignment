@@ -1,0 +1,16 @@
+﻿@model RowActionsViewModel
+
+@if (Model.DetailsUrl is not null)
+{
+    <a class="btn btn-sm btn-outline-primary" title="Details" href="@Model.DetailsUrl">
+        <i class="fa-solid fa-circle-info"></i>
+    </a>
+}
+<button type="button" class="btn btn-sm btn-outline-secondary" title="Edit"
+        data-modal-url="@Model.EditUrl">
+    <i class="fa-solid fa-pen-to-square"></i>
+</button>
+<button type="button" class="btn btn-sm btn-outline-danger" title="Delete"
+        data-modal-url="@Model.DeleteUrl">
+    <i class="fa-solid fa-trash"></i>
+</button>

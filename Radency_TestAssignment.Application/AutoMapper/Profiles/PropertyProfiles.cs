@@ -8,7 +8,8 @@ namespace Radency_TestAssignment.Application.AutoMapper.Profiles
     {
         public PropertyProfiles()
         {
-            CreateMap<Property, AddPropertyDTO>().ReverseMap();
+            CreateMap<Property, SavePropertyDTO>().ReverseMap();
+            CreateMap<Property, PropertyListItemDTO>().ReverseMap();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿    window.addEventListener("DOMContentLoaded", () => {
+﻿window.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll("input.input-validation-error").forEach(elem => elem.classList.add("is-invalid"));
         document.querySelectorAll("input.form-control, select.form-select").forEach((elem) => {
             let classWatcher = new ClassWatcher(elem, "input-validation-error",

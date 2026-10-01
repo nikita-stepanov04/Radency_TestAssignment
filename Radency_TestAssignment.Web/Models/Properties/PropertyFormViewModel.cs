@@ -4,6 +4,8 @@ namespace Radency_TestAssignment.Web.Models.Properties
 {
     public class PropertyFormViewModel
     {
+        public int? ID { get; set; }
+
         [Required(ErrorMessage = "Enter property name")]
         [StringLength(200, ErrorMessage = "Property name must be between {2} and {1} characters long", MinimumLength = 2)]
         [Display(Name = "Property Name", Prompt = "Enter property name")]

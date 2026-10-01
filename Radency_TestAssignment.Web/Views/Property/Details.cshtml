@@ -1,0 +1,35 @@
+﻿@model PropertyFormViewModel
+
+@{
+    Layout = "_MainLayout";
+}
+
+<div class="container mt-3">
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Name</dt>
+                <dd class="col-sm-9">@Model.Name</dd>
+
+                <dt class="col-sm-3">Address</dt>
+                <dd class="col-sm-9">@Model.Address</dd>
+
+                <dt class="col-sm-3">City</dt>
+                <dd class="col-sm-9">@Model.City</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="h5 mb-0">Units</h2>
+        <button type="button" class="btn btn-success me-3"
+                data-modal-url="@Url.Action("Create", "Unit", new { propertyId = Model.ID })">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+    </div>
+
+    <div id="units-list" data-refresh-url="@Url.Action("List", "Unit", new { propertyId = Model.ID, page = 1 })">
+        @await Component.InvokeAsync("UnitsList", new { propertyId = Model.ID, page = 1 })
+    </div>
+</div>

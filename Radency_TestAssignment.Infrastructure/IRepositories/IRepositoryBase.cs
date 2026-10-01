@@ -6,7 +6,8 @@ namespace Radency_TestAssignment.Infrastructure.IRepositories
 {
     public interface IRepositoryBase<TEntity> where TEntity : EntityBase
     {
-        Task<TEntity?> GetByIDAsync(long id);
+        Task<TEntity?> GetByIDAsync(int id);
+        Task<List<TEntity>> GetAllAsync();
         Task AddAsync(TEntity entity);
         void Delete(TEntity entity);
         void Update(TEntity entity);

@@ -23,7 +23,7 @@ namespace Radency_TestAssignment.Infrastructure.EFRepositories
             await DbContext.Set<TEntity>().AddAsync(entity);
         }
 
-        public virtual async Task<TEntity?> GetByIDAsync(long id)
+        public virtual async Task<TEntity?> GetByIDAsync(int id)
         {
             return await DbContext.Set<TEntity>().FindAsync(id);
         }
@@ -43,22 +43,30 @@ namespace Radency_TestAssignment.Infrastructure.EFRepositories
             DbSet.Update(entity);
         }
 
-        public virtual async Task<PagedResult<TProjection>> GetPagedAsync<TProjection>(
+        public async Task<PagedResult<TProjection>> GetPagedAsync<TProjection>(
             IQueryable<TProjection> query, PageRequest page)
         {
             var total = await query.CountAsync();
 
+            var totalPages = Math.Max(1, (int)Math.Ceiling(total / (double)page.PageSize));
+            var current = Math.Clamp(page.Page, 1, totalPages);
+
             var items = await query
-                .Skip(page.Skip)
+                .Skip((current - 1) * page.PageSize)
                 .Take(page.PageSize)
                 .ToListAsync();
 
-            return new PagedResult<TProjection>(items, total, page.Page, page.PageSize);
+            return new PagedResult<TProjection>(items, total, current, page.PageSize);
         }
 
         public Task<IDbContextTransaction> BeginTransactionAsync()
         {
             return DbContext.Database.BeginTransactionAsync();
+        }
+
+        public Task<List<TEntity>> GetAllAsync()
+        {
+            return DbSet.ToListAsync();
         }
     }
 }
