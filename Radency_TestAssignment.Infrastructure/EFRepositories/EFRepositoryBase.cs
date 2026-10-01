@@ -1,7 +1,8 @@
-﻿using Radency_TestAssignment.Domain.Entities;
-using Radency_TestAssignment.Infrastructure.IRepositories;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Radency_TestAssignment.Domain.Entities;
+using Radency_TestAssignment.Domain.Pagination;
+using Radency_TestAssignment.Infrastructure.IRepositories;
 
 namespace Radency_TestAssignment.Infrastructure.EFRepositories
 {
@@ -40,6 +41,19 @@ namespace Radency_TestAssignment.Infrastructure.EFRepositories
         public virtual void Update(TEntity entity)
         {
             DbSet.Update(entity);
+        }
+
+        public virtual async Task<PagedResult<TProjection>> GetPagedAsync<TProjection>(
+            IQueryable<TProjection> query, PageRequest page)
+        {
+            var total = await query.CountAsync();
+
+            var items = await query
+                .Skip(page.Skip)
+                .Take(page.PageSize)
+                .ToListAsync();
+
+            return new PagedResult<TProjection>(items, total, page.Page, page.PageSize);
         }
 
         public Task<IDbContextTransaction> BeginTransactionAsync()

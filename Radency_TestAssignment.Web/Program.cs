@@ -13,8 +13,7 @@ public partial class Program
         var services = builder.Services;
         var config = builder.Configuration;
 
-        builder.SetupLogger();
-        services.AddControllersWithViews();
+        builder.SetupLogger();        
 
         new List<IDependencyInjectionManager>
         {
@@ -24,11 +23,6 @@ public partial class Program
         }.ForEach(di => di.SetupDI(services, config));
 
         var app = builder.Build();
-
-        if (!app.Environment.IsDevelopment())
-        {
-            app.UseExceptionHandler("/Home/Error");
-        }
 
         app.UseRouting();
         app.UseAuthorization();

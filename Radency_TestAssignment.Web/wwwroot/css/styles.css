@@ -12,6 +12,11 @@
     flex: 1;
 }
 
+.home-content {
+    display: flex;
+    flex-direction: column;
+}
+
 .main-block {
     background-color: rgb(248, 249, 250);
     padding: 1rem;

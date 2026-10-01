@@ -31,19 +31,19 @@ namespace Radency_TestAssignment.Web.BusinessServices
             if (request.Role != RoleNames.Applicant && request.Role != RoleNames.PropertyManager)
                 return OpRes.Err<bool>("Invalid role");
 
-            User user = new User
+            var user = new User
             {
                 UserName = request.Email,
                 Email = request.Email,
                 FullName = request.FullName
             };
 
-            IdentityResult created = await _userManager.CreateAsync(user, request.Password);
+            var created = await _userManager.CreateAsync(user, request.Password);
 
             if (!created.Succeeded)
                 return OpRes.Err<bool>(created.Errors.Select(e => e.Description).First());
 
-            IdentityResult roleAdded = await _userManager.AddToRoleAsync(user, request.Role);
+            var roleAdded = await _userManager.AddToRoleAsync(user, request.Role);
 
             if (!roleAdded.Succeeded)
             {

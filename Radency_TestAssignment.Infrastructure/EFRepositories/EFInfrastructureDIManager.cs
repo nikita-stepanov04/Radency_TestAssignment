@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Radency_TestAssignment.Domain.DI;
 using Radency_TestAssignment.Domain.Entities.Identity;
+using Radency_TestAssignment.Infrastructure.EFRepositories.Properties;
+using Radency_TestAssignment.Infrastructure.IRepositories;
 
 namespace Radency_TestAssignment.Infrastructure.EFRepositories
 {
@@ -22,6 +24,8 @@ namespace Radency_TestAssignment.Infrastructure.EFRepositories
                 opts.EnableSensitiveDataLogging();
 #endif
             });
+
+            services.AddScoped<IPropertyRepository, EFPropertyRepository>();
 
             new IdentityBuilder(typeof(User), typeof(Role), services)
                 .AddEntityFrameworkStores<EFDataContext>();

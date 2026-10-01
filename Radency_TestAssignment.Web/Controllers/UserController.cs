@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Radency_TestAssignment.Application.DTOs;
 using Radency_TestAssignment.Application.IBusinessServices.Users;
@@ -17,6 +18,7 @@ namespace Radency_TestAssignment.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LogInViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
@@ -48,6 +50,7 @@ namespace Radency_TestAssignment.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Registration(RegistrationViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
@@ -64,6 +67,14 @@ namespace Radency_TestAssignment.Web.Controllers
                 return View(model);
             }
             else return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await _accountBS.LogoutAsync();
+            return RedirectToAction("Login", "User");
         }
     }
 }

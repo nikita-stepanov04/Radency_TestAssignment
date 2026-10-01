@@ -1,5 +1,6 @@
-﻿using Radency_TestAssignment.Domain.Entities;
-using Microsoft.EntityFrameworkCore.Storage;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using Radency_TestAssignment.Domain.Entities;
+using Radency_TestAssignment.Domain.Pagination;
 
 namespace Radency_TestAssignment.Infrastructure.IRepositories
 {
@@ -9,6 +10,8 @@ namespace Radency_TestAssignment.Infrastructure.IRepositories
         Task AddAsync(TEntity entity);
         void Delete(TEntity entity);
         void Update(TEntity entity);
+        Task<PagedResult<TProjection>> GetPagedAsync<TProjection>(
+            IQueryable<TProjection> query, PageRequest page);
         Task SaveChangesAsync();
         Task<IDbContextTransaction> BeginTransactionAsync();
     }

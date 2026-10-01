@@ -1,0 +1,23 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<div class="page">
+    <div class="d-grid">
+        @await Component.InvokeAsync("MainNav")
+    </div>
+    <div class="content home-content">
+        @RenderBody()
+    </div>
+    @await Html.PartialAsync("Footer")
+</div>
+
+<div class="modal fade" id="appModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" id="appModalContent"></div>
+    </div>
+</div>
+
+<script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/modal.js" asp-append-version="true"></script>
+

@@ -10,11 +10,6 @@
     <ProjectReference Include="..\Radency_TestAssignment.Infrastructure\Radency_TestAssignment.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="AutoMapper\Profiles\" />
-    <Folder Include="BusinessServices\" />
-  </ItemGroup>
-
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="16.2.0" />
 		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.12" />
