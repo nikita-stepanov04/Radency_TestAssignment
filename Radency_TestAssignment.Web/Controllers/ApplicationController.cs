@@ -1,9 +1,15 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Radency_TestAssignment.Application;
 using Radency_TestAssignment.Application.DTOs;
 using Radency_TestAssignment.Application.IBusinessServices;
+using Radency_TestAssignment.Application.IBusinessServices.Properties;
 using Radency_TestAssignment.Domain.Applications;
+using Radency_TestAssignment.Domain.Entities.Identity;
+using Radency_TestAssignment.Domain.Enums;
+using Radency_TestAssignment.Web.Components;
+using Radency_TestAssignment.Web.Models;
 using Radency_TestAssignment.Web.Models.Applications;
 using Radency_TestAssignment.Web.Models.Shared;
 
@@ -11,13 +17,34 @@ namespace Radency_TestAssignment.Web.Controllers
 {
     public class ApplicationController(
         IMapper _mapper,
+        IPropertyBS _propertyBS,
         IApplicationBS _applicationBS) : Radency_TestAssignmentControllerBase
     {
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index(ApplicationStatus? status, int? propertyID)
         {
-            return View();
+            var isManager = User.IsInRole(RoleNames.PropertyManager);
+            var properties = await _propertyBS.GetLookupAsync();
+
+            var statuses = Enum.GetValues<ApplicationStatus>()
+                .Where(s => !isManager || s != ApplicationStatus.Draft)
+                .Select(s => new SelectListItem(s.ToString(), s.ToString(), s == status))
+                .ToList();
+
+            return View(new ApplicationIndexViewModel
+            {
+                Statuses = statuses,
+                Properties = properties
+                    .Select(p => new SelectListItem(p.Name, p.ID.ToString(), p.ID == propertyID))
+                    .ToList(),
+                Status = status,
+                PropertyID = propertyID
+            });
         }
+
+        [HttpGet]
+        public IActionResult List(ApplicationStatus? status, int? propertyID, int page = 1)
+            => ViewComponent(typeof(ApplicationListViewComponent), new { status, propertyID, page });
 
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Start(int unitID)

@@ -11,5 +11,6 @@ namespace Radency_TestAssignment.Application.IBusinessServices.Properties
         Task DeleteAsync(int id);
         Task<Property?> GetByIdAsync(int id);
         Task<PagedResult<PropertyListItemDTO>> GetPagedAsync(PageRequest page);
+        Task<List<PropertyLookupDTO>> GetLookupAsync();
     }
 }

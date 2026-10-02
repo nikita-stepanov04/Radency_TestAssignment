@@ -3,6 +3,7 @@ using Radency_TestAssignment.Domain.Applications;
 using Radency_TestAssignment.Domain.Entities.Applications;
 using Radency_TestAssignment.Domain.Entities.Leasing;
 using Radency_TestAssignment.Domain.Enums;
+using Radency_TestAssignment.Domain.Pagination;
 using Radency_TestAssignment.Infrastructure.IRepositories;
 
 namespace Radency_TestAssignment.Infrastructure.EFRepositories
@@ -57,33 +58,31 @@ namespace Radency_TestAssignment.Infrastructure.EFRepositories
                 .AnyAsync(l => l.UnitID == unitID && l.StartDate <= today && today <= l.EndDate);
         }
 
-        public async Task<List<ApplicationListItem>> GetListAsync(ApplicationListFilter filter)
+        public async Task<PagedResult<RentalApplication>> GetListAsync(ApplicationListQuery query, PageRequest page)
         {
-            var query = DbSet.AsNoTracking();
+            var applications = DbSet.AsNoTracking();
 
-            if (filter.ApplicantID.HasValue)
-                query = query.Where(a => a.Applicants.Any(u => u.Id == filter.ApplicantID.Value));
+            if (query.ApplicantID.HasValue)
+                applications = applications.Where(a => a.Applicants.Any(u => u.Id == query.ApplicantID.Value));
 
-            if (filter.Status.HasValue)
-                query = query.Where(a => a.Status == filter.Status.Value);
+            if (query.ExcludeDrafts)
+                applications = applications.Where(a => a.Status != ApplicationStatus.Draft);
 
-            if (filter.PropertyID.HasValue)
-                query = query.Where(a => a.Unit.PropertyID == filter.PropertyID.Value);
+            if (query.Status.HasValue)
+                applications = applications.Where(a => a.Status == query.Status.Value);
 
-            return await query
+            if (query.PropertyID.HasValue)
+                applications = applications.Where(a => a.Unit.PropertyID == query.PropertyID.Value);
+
+            var ordered = applications
+                .Include(a => a.Unit).ThenInclude(u => u.Property)
+                .Include(a => a.Applicants)
                 .OrderByDescending(a => a.SubmittedAtUtc ?? a.CreatedAtUtc)
-                .Select(a => new ApplicationListItem
-                {
-                    ID = a.ID,
-                    PropertyName = a.Unit.Property.Name,
-                    UnitNumber = a.Unit.UnitNumber,
-                    Status = a.Status,
-                    ApplicantNames = string.Join(", ", a.Applicants.Select(u => u.FullName)),
-                    CreatedAtUtc = a.CreatedAtUtc,
-                    SubmittedAtUtc = a.SubmittedAtUtc
-                })
-                .ToListAsync();
+                .ThenByDescending(a => a.ID);
+
+            return await GetPagedAsync(ordered, page);
         }
+
         public async Task<bool> TrySaveChangesAsync()
         {
             try

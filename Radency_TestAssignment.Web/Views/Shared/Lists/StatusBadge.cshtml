@@ -1,0 +1,12 @@
+﻿@model ApplicationStatus
+@{
+    var cssClass = Model switch
+    {
+        ApplicationStatus.Draft => "text-bg-secondary",
+        ApplicationStatus.Submitted => "text-bg-primary",
+        ApplicationStatus.Approved => "text-bg-success",
+        _ => "text-bg-warning"
+    };
+}
+
+<span class="badge @cssClass">@Model</span>

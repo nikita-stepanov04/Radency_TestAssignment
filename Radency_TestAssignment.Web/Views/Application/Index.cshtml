@@ -1,5 +1,56 @@
-﻿@{
+﻿@model ApplicationIndexViewModel
+@{
     Layout = "_MainLayout";
 }
 
-<p>Applications</p>
+<div class="container mt-2">
+    <h2 class="h3 mb-3">Applications</h2>
+
+    <form id="applications-filter" class="row g-2 mb-3"
+          method="get" asp-action="Index">
+        <div class="col-md-3">
+            <select name="status" class="form-select">
+                <option value="">All statuses</option>
+                @foreach (var s in Model.Statuses)
+                {
+                    <option value="@s.Value" selected="@s.Selected">@s.Text</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <select name="propertyID" class="form-select">
+                <option value="">All properties</option>
+                @foreach (var p in Model.Properties)
+                {
+                    <option value="@p.Value" selected="@p.Selected">@p.Text</option>
+                }
+            </select>
+        </div>
+    </form>
+
+    <div id="applications-list"
+         data-refresh-url="@Url.Action("List", "Application")">
+        @await Component.InvokeAsync("ApplicationList",
+            new { status = Model.Status, propertyID = Model.PropertyID, page = 1 })
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const form = document.getElementById('applications-filter');
+            const container = document.getElementById('applications-list');
+
+            const reload = async () => {
+                const params = new URLSearchParams(new FormData(form));
+                for (const [k, v] of [...params]) if (!v) params.delete(k);
+                const res = await fetch(`${container.dataset.refreshUrl}?${params}`);
+                container.innerHTML = await res.text();
+                history.replaceState(null, '', params.size ? `?${params}` : location.pathname);
+            };
+
+            form.addEventListener('change', reload);
+            form.addEventListener('submit', e => { e.preventDefault(); reload(); });
+        })();
+    </script>
+}

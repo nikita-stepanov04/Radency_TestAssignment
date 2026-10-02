@@ -1,5 +1,6 @@
 ﻿using Radency_TestAssignment.Domain.Applications;
 using Radency_TestAssignment.Domain.Entities.Applications;
+using Radency_TestAssignment.Domain.Pagination;
 
 namespace Radency_TestAssignment.Infrastructure.IRepositories
 {
@@ -10,7 +11,7 @@ namespace Radency_TestAssignment.Infrastructure.IRepositories
         Task<ApplicationAccess?> GetAccessAsync(int id, int userID);
         Task<RentalApplication?> FindDraftAsync(int unitID, int userID);
         Task<bool> HasActiveLeaseAsync(int unitID, DateOnly today);
-        Task<List<ApplicationListItem>> GetListAsync(ApplicationListFilter filter);
+        Task<PagedResult<RentalApplication>> GetListAsync(ApplicationListQuery query, PageRequest page);
         Task<bool> TrySaveChangesAsync();
     }
 }

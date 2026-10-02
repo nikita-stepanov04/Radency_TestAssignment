@@ -1,15 +1,19 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Radency_TestAssignment.Application.DTOs;
 using Radency_TestAssignment.Application.IBusinessServices;
 using Radency_TestAssignment.Domain.Applications;
 using Radency_TestAssignment.Domain.Entities.Applications;
 using Radency_TestAssignment.Domain.Entities.Identity;
 using Radency_TestAssignment.Domain.Enums;
+using Radency_TestAssignment.Domain.Pagination;
 using Radency_TestAssignment.Infrastructure.IRepositories;
 
 namespace Radency_TestAssignment.Application.BusinessServices
 {
     public class ApplicationBS(
+        IMapper _mapper,
         IApplicationRepository _applicationRepository,
         IUnitRepository _unitRepository,
         UserManager<User> _userManager) : IApplicationBS
@@ -136,6 +140,29 @@ namespace Radency_TestAssignment.Application.BusinessServices
 
             await _applicationRepository.SaveChangesAsync();
             return OpRes.Success(true);
+        }
+
+        public async Task<PagedResult<ApplicationListItemDTO>> GetListAsync(
+            ApplicationListFilterDTO filter, int userID, bool isManager)
+        {
+            var query = new ApplicationListQuery
+            {
+                Status = filter.Status,
+                PropertyID = filter.PropertyID
+            };
+
+            if (isManager)
+                query.ExcludeDrafts = true;
+            else
+                query.ApplicantID = userID;
+
+            var paged = await _applicationRepository.GetListAsync(query, new PageRequest(filter.Page, filter.PageSize));
+
+            return new PagedResult<ApplicationListItemDTO>(
+                _mapper.Map<List<ApplicationListItemDTO>>(paged.Items),
+                paged.TotalCount,
+                paged.Page,
+                paged.PageSize);
         }
 
         private async Task<SummaryDTO> BuildSummaryAsync(RentalApplication application)

@@ -1,0 +1,67 @@
+﻿@model PagedResult<ApplicationListItemDTO>
+@{
+    var status = ViewData["Status"] as ApplicationStatus?;
+    var propertyID = ViewData["PropertyID"] as int?;
+    var isManager = (bool)ViewData["IsManager"]!;
+
+    var pager = new PagerViewModel(
+        Model.Page,
+        Model.TotalPages,
+        n => Url.Action("List", "Application", new { page = n, status, propertyID }));
+}
+
+@if (!Model.Items.Any())
+{
+    <partial name="Lists/EmptyState" model="@("No applications found.")" />
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Unit</th>
+                @if (isManager)
+                {
+                    <th>Applicant</th>
+                }
+                <th>Status</th>
+                <th>Updated</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var a in Model.Items)
+            {
+                <tr>
+                    <td>@a.PropertyName</td>
+                    <td>@a.UnitNumber</td>
+                    @if (isManager)
+                    {
+                        <td>@a.ApplicantNames</td>
+                    }
+                    <td><partial name="Lists/StatusBadge" model="a.Status" /></td>
+                    <td>@a.SubmittedAtUtc.ToString()</td>
+                    <td class="text-end">
+                        @if (!isManager && ApplicationRules.CanEdit(a.Status))
+                        {
+                            <a class="btn btn-sm btn-outline-primary"
+                               asp-controller="Application" asp-action="Edit" asp-route-id="@a.ID">
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-sm btn-outline-secondary"
+                               asp-controller="Application" asp-action="Edit" asp-route-id="@a.ID">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <partial name="Lists/Pager" model="pager" />
+}

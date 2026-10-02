@@ -51,5 +51,14 @@ namespace Radency_TestAssignment.Application.BusinessServices
 
             return new PagedResult<PropertyListItemDTO>(properties, res.TotalCount, res.Page, res.PageSize);
         }
+
+        public async Task<List<PropertyLookupDTO>> GetLookupAsync()
+            => (await _propRep.GetAllAsync())
+                .OrderBy(p => p.Name)
+                .Select(p => new PropertyLookupDTO()
+                {
+                    ID = p.ID,
+                    Name = p.Name
+                }).ToList();
     }
 }
