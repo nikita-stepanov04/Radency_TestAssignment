@@ -43,6 +43,8 @@ public partial class Program
             pattern: "{controller=Home}/{action=Index}/{id?}"
         ).WithStaticAssets();
 
+        StartUpDb.ApplyMigrations(app.Services);
+
         await RoleSeeder.SeedRolesAsync(app.Services);
         await UnitTypeSeeder.SeedUnitTypesAsync(app.Services);
 
