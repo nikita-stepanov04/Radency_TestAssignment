@@ -1,0 +1,16 @@
+﻿@model ModalFormViewModel<ReviewFormViewModel>
+@{
+    Layout = "Forms/Modals/ModalLayout";
+}
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+@Html.HiddenFor(m => m.FormModel.ID)
+
+@Html.EditorFor(m => m.FormModel.Outcome, "Selectors/DefaultSelector", new { Items = Model.FormModel.Outcomes })
+
+<div class="mb-3">
+    <label asp-for="FormModel.Comment" class="form-label"></label>
+    <textarea asp-for="FormModel.Comment" class="form-control" rows="4"></textarea>
+    <span asp-validation-for="FormModel.Comment" class="text-danger"></span>
+</div>

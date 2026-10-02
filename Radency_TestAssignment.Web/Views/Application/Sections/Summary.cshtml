@@ -20,3 +20,10 @@
         </ul>
     </div>
 }
+
+@if (!string.IsNullOrEmpty(Model.ReviewComment))
+{
+    <div class="alert alert-warning">
+        <strong>Reviewer comment:</strong> @Model.ReviewComment
+    </div>
+}

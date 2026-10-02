@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Radency_TestAssignment.Application;
@@ -9,17 +10,21 @@ using Radency_TestAssignment.Domain.Applications;
 using Radency_TestAssignment.Domain.Entities.Identity;
 using Radency_TestAssignment.Domain.Enums;
 using Radency_TestAssignment.Web.Components;
+using Radency_TestAssignment.Web.Identity;
 using Radency_TestAssignment.Web.Models;
 using Radency_TestAssignment.Web.Models.Applications;
 using Radency_TestAssignment.Web.Models.Shared;
 
 namespace Radency_TestAssignment.Web.Controllers
 {
+    [Authorize(Policy = Policies.AuthorizedAny)]
     public class ApplicationController(
         IMapper _mapper,
         IPropertyBS _propertyBS,
         IApplicationBS _applicationBS) : Radency_TestAssignmentControllerBase
     {
+        private bool IsManager => User.IsInRole(RoleNames.PropertyManager);
+
         [HttpGet]
         public async Task<IActionResult> Index(ApplicationStatus? status, int? propertyID)
         {
@@ -56,13 +61,17 @@ namespace Radency_TestAssignment.Web.Controllers
                 return RedirectToAction("Index", "Units");
             }
 
-            return RedirectToAction(nameof(Edit), new { id = result.Result });
+            return RedirectToAction(nameof(Edit), new 
+            { 
+                id = result.Result, 
+                step = ApplicationSection.ApplicantInformation 
+            });
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(int id, ApplicationStep step = ApplicationStep.ApplicantInfo)
+        public async Task<IActionResult> Edit(int id, ApplicationSection? step)
         {
-            var modelDTO = await _applicationBS.GetWizardAsync(id, UserID, step);
+            var modelDTO = await _applicationBS.GetWizardAsync(id, UserID, step, IsManager);
             if (modelDTO == null) return NotFound();
 
             var viewModel = _mapper.Map<ApplicationWizardViewModel>(modelDTO);
@@ -88,6 +97,40 @@ namespace Radency_TestAssignment.Web.Controllers
             }
         }
 
+        [HttpGet]
+        [Authorize(Policy = Policies.AuthorizedManagers)]
+        public async Task<IActionResult> Review(int id)
+        {
+            var access = await _applicationBS.GetViewAccessAsync(id, UserID, isManager: true);
+            if (access == null || !ApplicationRules.CanReview(access.Status)) return NotFound();
+
+            return PartialView("ReviewForm", CreateReviewModal(new ReviewFormViewModel { ID = id }));
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Policy = Policies.AuthorizedManagers)]
+        public async Task<IActionResult> Review([Bind(Prefix = ModalBindingPrefix)] ReviewFormViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return PartialView("ReviewForm", CreateReviewModal(model));
+
+            var result = await _applicationBS.ReviewAsync(_mapper.Map<ReviewDTO>(model), UserID);
+            if (result.HasError)
+            {
+                ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                return PartialView("ReviewForm", CreateReviewModal(model));
+            }
+
+            var message = model.Outcome switch
+            {
+                ReviewOutcome.Approve => "Application approved",
+                ReviewOutcome.Return => "Application returned to the applicant",
+                _ => "Application denied"
+            };
+
+            return Json(new FormResult { Message = message });
+        }
+
         private async Task<IActionResult> ContinueAsync(ApplicationWizardViewModel model)
         {
             var userID = UserID;
@@ -97,7 +140,7 @@ namespace Radency_TestAssignment.Web.Controllers
 
             switch (model.Step)
             {
-                case ApplicationStep.ApplicantInfo:
+                case ApplicationSection.ApplicantInformation:
                     if (!TryValidateModel(model.ApplicantInformation, nameof(model.ApplicantInformation)))
                     {
                         return await RenderInvalidAsync(model);
@@ -106,7 +149,7 @@ namespace Radency_TestAssignment.Web.Controllers
                     result = await _applicationBS.SaveApplicantInfoAsync(model.ID, userID, applicantInfoDTO);
                     break;
 
-                case ApplicationStep.ResidenceHistory:
+                case ApplicationSection.ResidenceHistory:
                     result = await _applicationBS.SaveResidenceHistoryAsync(model.ID, userID, model.ResidenceHistory.Version);
                     break;
 
@@ -133,9 +176,9 @@ namespace Radency_TestAssignment.Web.Controllers
             return Json(new { redirectUrl = Url.Action("Index", "Home") });
         }
 
-        private async Task<IActionResult> RenderAsync(int id, ApplicationStep step)
+        private async Task<IActionResult> RenderAsync(int id, ApplicationSection step)
         {
-            var wizardDTO = await _applicationBS.GetWizardAsync(id, UserID, step);
+            var wizardDTO = await _applicationBS.GetWizardAsync(id, UserID, step, false);
             if (wizardDTO == null) return NotFound();
 
             var viewModel = _mapper.Map<ApplicationWizardViewModel>(wizardDTO);
@@ -147,6 +190,18 @@ namespace Radency_TestAssignment.Web.Controllers
             var dto = _mapper.Map<ApplicationWizardDTO>(posted);
             await _applicationBS.FillContextAsync(dto, UserID);
             return PartialView("Wizard", posted);
+        }
+
+        private static ModalFormViewModel<ReviewFormViewModel> CreateReviewModal(ReviewFormViewModel form)
+        {
+            return new ModalFormViewModel<ReviewFormViewModel>
+            {
+                Controller = "Application",
+                Action = "Review",
+                Title = "Review application",
+                SubmitText = "Save review",
+                FormModel = form
+            };
         }
     }
 }

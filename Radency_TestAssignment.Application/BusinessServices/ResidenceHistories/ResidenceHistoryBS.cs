@@ -17,9 +17,9 @@ namespace Radency_TestAssignment.Application.BusinessServices
         private const string ResidenceNotFound = "Residence was not found.";
         private const string NotEditable = "This application can no longer be edited.";
 
-        public async Task<OpRes<List<ResidenceDTO>>> GetListAsync(int applicationID, int userID)
+        public async Task<OpRes<List<ResidenceDTO>>> GetListAsync(int applicationID, int userID, bool isManager)
         {
-            var access = await _applicationRep.GetAccessAsync(applicationID, userID);
+            var access = await _applicationRep.GetViewAccessAsync(applicationID, userID, isManager);
             if (access == null)
                 return OpRes.Err<List<ResidenceDTO>>(ApplicationNotFound);
 

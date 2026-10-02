@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
 using Radency_TestAssignment.Application.DTOs;
 using Radency_TestAssignment.Application.IBusinessServices;
 using Radency_TestAssignment.Domain.Applications;
 using Radency_TestAssignment.Domain.Entities.Applications;
 using Radency_TestAssignment.Domain.Entities.Identity;
+using Radency_TestAssignment.Domain.Entities.Leasing;
 using Radency_TestAssignment.Domain.Enums;
 using Radency_TestAssignment.Domain.Pagination;
 using Radency_TestAssignment.Infrastructure.IRepositories;
@@ -14,8 +14,8 @@ namespace Radency_TestAssignment.Application.BusinessServices
 {
     public class ApplicationBS(
         IMapper _mapper,
-        IApplicationRepository _applicationRepository,
         IUnitRepository _unitRepository,
+        IApplicationRepository _applicationRepository,
         UserManager<User> _userManager) : IApplicationBS
     {
         private const string NotFoundMessage = "Application was not found.";
@@ -69,13 +69,19 @@ namespace Radency_TestAssignment.Application.BusinessServices
             return _applicationRepository.GetAccessAsync(id, userID);
         }
 
-        public async Task<ApplicationWizardDTO?> GetWizardAsync(int id, int userID, ApplicationStep step)
+        public async Task<ApplicationWizardDTO?> GetWizardAsync(int id, int userID, ApplicationSection? step, bool isManager)
         {
-            var application = await _applicationRepository.GetForEditAsync(id, userID);
+            var application = await _applicationRepository.GetForViewAsync(id, userID, isManager);
             if (application == null) return null;
 
-            var model = new ApplicationWizardDTO { ID = application.ID, Step = step };
-            ApplyContext(model, application);
+            var model = new ApplicationWizardDTO
+            {
+                ID = application.ID,
+                Step = step ?? application.SectionStates
+                    .OrderBy(s => s.Section)
+                    .FirstOrDefault(s => !s.IsSaved)?.Section ?? ApplicationSection.Summary
+            };
+            ApplyContext(model, application, isManager);
 
             model.ApplicantInformation.Version = GetState(application, ApplicationSection.ApplicantInformation).Version;
             model.ApplicantInformation.FullName = application.FullName;
@@ -85,7 +91,7 @@ namespace Radency_TestAssignment.Application.BusinessServices
 
             model.ResidenceHistory.Version = GetState(application, ApplicationSection.ResidenceHistory).Version;
 
-            if (step == ApplicationStep.Summary)
+            if (model.Step == ApplicationSection.Summary)
                 model.Summary = await BuildSummaryAsync(application);
 
             return model;
@@ -96,7 +102,7 @@ namespace Radency_TestAssignment.Application.BusinessServices
             var application = await _applicationRepository.GetForEditAsync(model.ID, userID);
             if (application == null) return;
 
-            ApplyContext(model, application);
+            ApplyContext(model, application, false);
         }
 
         public Task<OpRes<bool>> SaveApplicantInfoAsync(int id, int userID, ApplicantInfoSectionDTO dto)
@@ -165,6 +171,59 @@ namespace Radency_TestAssignment.Application.BusinessServices
                 paged.PageSize);
         }
 
+        public async Task<OpRes<bool>> ReviewAsync(ReviewDTO dto, int managerID)
+        {
+            var commentError = ApplicationRules.ValidateReview(dto.Outcome, dto.Comment);
+            if (commentError != null)
+                return OpRes.Err<bool>(commentError);
+
+            var application = await _applicationRepository.GetForReviewAsync(dto.ApplicationID);
+            if (application == null)
+                return OpRes.Err<bool>(NotFoundMessage);
+
+            if (!ApplicationRules.CanReview(application.Status))
+                return OpRes.Err<bool>("This application is not awaiting review.");
+
+            var now = DateTime.UtcNow;
+            var today = DateOnly.FromDateTime(now);
+
+            if (dto.Outcome == ReviewOutcome.Approve)
+            {
+                if (await _applicationRepository.HasActiveLeaseAsync(application.UnitID, today))
+                    return OpRes.Err<bool>(LeasedMessage);
+
+                application.Lease = new Lease
+                {
+                    UnitID = application.UnitID,
+                    StartDate = today,
+                    EndDate = ApplicationRules.GetLeaseEnd(today)
+                };
+            }
+
+            var from = application.Status;
+            application.Status = ApplicationRules.GetStatus(dto.Outcome);
+
+            if (!string.IsNullOrEmpty(dto.Comment))
+            {
+                var reviewer = await _userManager.FindByIdAsync(managerID.ToString());
+
+                var managerNote = new ManagerNote
+                {
+                    RentalApplication = application,
+                    Author = reviewer!,
+                    Text = dto.Comment,
+                    CreatedAtUtc = now,
+                    UpdatedAtUtc = now
+                };
+
+                application.ManagerNotes = [managerNote];
+            }
+
+            return await _applicationRepository.TrySaveChangesAsync()
+                ? OpRes.Success(true)
+                : OpRes.Err<bool>("The application was changed by someone else. Reload the page.");
+        }
+
         private async Task<SummaryDTO> BuildSummaryAsync(RentalApplication application)
         {
             var summary = new SummaryDTO();
@@ -227,9 +286,10 @@ namespace Radency_TestAssignment.Application.BusinessServices
                 : OpRes.Err<bool>(StaleMessage);
         }
 
-        private static void ApplyContext(ApplicationWizardDTO model, RentalApplication application)
+        private static void ApplyContext(ApplicationWizardDTO model, RentalApplication application, bool isManager)
         {
-            model.IsEditable = ApplicationRules.CanEdit(application.Status);
+            model.CanReview = isManager && ApplicationRules.CanReview(application.Status);
+            model.IsEditable = !isManager && ApplicationRules.CanEdit(application.Status);
             model.Status = application.Status;
             model.UnitTitle = $"{application.Unit.Property.Name}, unit {application.Unit.UnitNumber}";
             model.SavedSteps = new List<bool>
@@ -242,11 +302,19 @@ namespace Radency_TestAssignment.Application.BusinessServices
             model.ApplicantInformation.IsReadOnly = !model.IsEditable;
             model.ResidenceHistory.IsReadOnly = !model.IsEditable;
             model.ResidenceHistory.ApplicationID = application.ID;
+            model.ReviewComment = application.ManagerNotes
+                .OrderByDescending(n => n.UpdatedAtUtc)
+                .FirstOrDefault()?.Text;
         }
 
         private static ApplicationSectionState GetState(RentalApplication application, ApplicationSection section)
         {
             return application.SectionStates.Single(s => s.Section == section);
+        }
+
+        public Task<ApplicationAccess?> GetViewAccessAsync(int id, int userID, bool isManager)
+        {
+            return _applicationRepository.GetViewAccessAsync(id, userID, isManager);
         }
     }
 }

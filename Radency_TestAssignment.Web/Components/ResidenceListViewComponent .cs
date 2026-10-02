@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Radency_TestAssignment.Application.IBusinessServices;
+using Radency_TestAssignment.Domain.Entities.Identity;
 using Radency_TestAssignment.Web.Models.Applications;
 using System.Security.Claims;
 
@@ -13,7 +14,10 @@ namespace Radency_TestAssignment.Web.Components
         public async Task<IViewComponentResult> InvokeAsync(int applicationID, bool isReadOnly)
         {
             var userId = int.Parse(UserClaimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var result = await _residenceBS.GetListAsync(applicationID, userId);
+
+            var isManager = UserClaimsPrincipal.IsInRole(RoleNames.PropertyManager);
+            var result = await _residenceBS.GetListAsync(applicationID, userId, isManager);
+
             if (result.HasError)
                 return Content(string.Empty);
 

@@ -1,12 +1,11 @@
-﻿using Radency_TestAssignment.Domain.Applications;
-using Radency_TestAssignment.Domain.Enums;
+﻿using Radency_TestAssignment.Domain.Enums;
 
 namespace Radency_TestAssignment.Web.Models.Applications
 {
     public class ApplicationWizardViewModel
     {
         public int ID { get; set; }
-        public ApplicationStep Step { get; set; }
+        public ApplicationSection Step { get; set; }
 
         public bool IsEditable { get; set; }
         public string UnitTitle { get; set; } = string.Empty;
@@ -16,5 +15,8 @@ namespace Radency_TestAssignment.Web.Models.Applications
         public ApplicantInfoSectionViewModel ApplicantInformation { get; set; } = new ApplicantInfoSectionViewModel();
         public ResidenceHistorySectionViewModel ResidenceHistory { get; set; } = new ResidenceHistorySectionViewModel();
         public SummaryViewModel Summary { get; set; } = new SummaryViewModel();
+
+        public bool CanReview { get; set; }
+        public string? ReviewComment { get; set; }
     }
 }

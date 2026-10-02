@@ -6,7 +6,7 @@ namespace Radency_TestAssignment.Application.DTOs
     public class ApplicationWizardDTO
     {
         public int ID { get; set; }
-        public ApplicationStep Step { get; set; }
+        public ApplicationSection Step { get; set; }
 
         public bool IsEditable { get; set; }
         public string UnitTitle { get; set; } = string.Empty;
@@ -16,7 +16,8 @@ namespace Radency_TestAssignment.Application.DTOs
         public ApplicantInfoSectionDTO ApplicantInformation { get; set; } = new ApplicantInfoSectionDTO();
         public ResidenceHistorySectionDTO ResidenceHistory { get; set; } = new ResidenceHistorySectionDTO();
         public SummaryDTO Summary { get; set; } = new SummaryDTO();
+
+        public bool CanReview { get; set; }
+        public string? ReviewComment { get; set; }
     }
-
-
 }

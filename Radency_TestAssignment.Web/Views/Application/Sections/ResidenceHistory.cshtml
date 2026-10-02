@@ -3,6 +3,9 @@
 @Html.HiddenFor(m => m.Version)
 @Html.HiddenFor(m => m.ApplicationID)
 
-<div data-refresh-url="@Url.Action("List", "ResidenceHistory", new { applicationID = Model.ApplicationID })">
+<div data-refresh-url="@(Model.IsReadOnly 
+        ? null : 
+        Url.Action("List", "ResidenceHistory", new { applicationID = Model.ApplicationID })
+)">
     @await Component.InvokeAsync("ResidenceList", new { applicationID = Model.ApplicationID, isReadOnly = Model.IsReadOnly })
 </div>

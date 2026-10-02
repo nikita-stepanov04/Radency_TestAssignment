@@ -8,19 +8,19 @@
 
     @switch (Model.Step)
     {
-        case ApplicationStep.ApplicantInfo:
+        case ApplicationSection.ApplicantInformation:
             <partial name="Sections/ApplicantInfo" for="ApplicantInformation" />
             break;
-        case ApplicationStep.ResidenceHistory:
+        case ApplicationSection.ResidenceHistory:
             <partial name="Sections/ResidenceHistory" for="ResidenceHistory" />
             break;
-        case ApplicationStep.Summary:
+        case ApplicationSection.Summary:
             <partial name="Sections/Summary" model="Model" />
             break;
     }
 
     <div class="d-flex justify-content-between mt-4">
-        @if (Model.Step == ApplicationStep.ApplicantInfo)
+        @if (Model.Step == ApplicationSection.ApplicantInformation)
         {
             <span></span>
         }
@@ -33,7 +33,7 @@
             <a asp-action="Edit" asp-route-id="@Model.ID" asp-route-step="@(Model.Step - 1)" class="btn btn-outline-secondary">Back</a>
         }
 
-        @if (Model.Step == ApplicationStep.Summary)
+        @if (Model.Step == ApplicationSection.Summary)
         {
             if (Model.IsEditable)
             {
@@ -50,6 +50,14 @@
         else
         {
             <a asp-action="Edit" asp-route-id="@Model.ID" asp-route-step="@(Model.Step + 1)" class="btn btn-primary">Next</a>
+        }
+       
+        @if (Model.CanReview)
+        {
+            <button type="button" class="btn btn-primary"
+                    data-modal-url="@Url.Action("Review", "Application", new { id = Model.ID })">
+                <i class="fa-solid fa-clipboard-check me-1"></i>Review
+            </button>
         }
     </div>
 </form>

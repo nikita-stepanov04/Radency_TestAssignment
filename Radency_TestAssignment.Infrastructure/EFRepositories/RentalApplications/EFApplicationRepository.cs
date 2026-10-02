@@ -22,19 +22,7 @@ namespace Radency_TestAssignment.Infrastructure.EFRepositories
                 .AsSplitQuery()
                 .SingleOrDefaultAsync(a => a.ID == id && a.Applicants.Any(u => u.Id == userID));
         }
-
-        public async Task<RentalApplication?> GetForReviewAsync(int id)
-        {
-            return await DbSet
-                .Include(a => a.Unit).ThenInclude(u => u.Property)
-                .Include(a => a.SectionStates)
-                .Include(a => a.Residences.OrderBy(r => r.MoveInDate))
-                .Include(a => a.Applicants)
-                .Include(a => a.Reviewer)
-                .AsSplitQuery()
-                .SingleOrDefaultAsync(a => a.ID == id);
-        }
-
+        
         public async Task<ApplicationAccess?> GetAccessAsync(int id, int userID)
         {
             return await DbSet
@@ -81,6 +69,39 @@ namespace Radency_TestAssignment.Infrastructure.EFRepositories
                 .ThenByDescending(a => a.ID);
 
             return await GetPagedAsync(ordered, page);
+        }
+
+        private IQueryable<RentalApplication> ViewableBy(int userID, bool isManager)
+        {
+            var applications = DbSet.AsNoTracking();
+
+            return isManager
+                ? applications.Where(a => a.Status != ApplicationStatus.Draft)
+                : applications.Where(a => a.Applicants.Any(u => u.Id == userID));
+        }
+
+        public async Task<RentalApplication?> GetForViewAsync(int id, int userID, bool isManager)
+        {
+            return await ViewableBy(userID, isManager)
+                .Include(a => a.Unit)
+                    .ThenInclude(u => u.Property)
+                .Include(a => a.SectionStates)
+                .Include(a => a.ManagerNotes)
+                .AsSplitQuery()
+                .SingleOrDefaultAsync(a => a.ID == id);
+        }
+
+        public async Task<ApplicationAccess?> GetViewAccessAsync(int id, int userID, bool isManager)
+        {
+            return await ViewableBy(userID, isManager)
+                .Where(a => a.ID == id)
+                .Select(a => new ApplicationAccess { ID = a.ID, Status = a.Status })
+                .SingleOrDefaultAsync();
+        }
+
+        public async Task<RentalApplication?> GetForReviewAsync(int id)
+        {
+            return await DbSet.SingleOrDefaultAsync(a => a.ID == id);
         }
 
         public async Task<bool> TrySaveChangesAsync()

@@ -22,14 +22,14 @@ namespace Radency_TestAssignment.Domain.Applications
             return leases.Any(l => l.StartDate <= today && today <= l.EndDate);
         }
 
-        public static ApplicationStep Next(ApplicationStep step)
+        public static ApplicationSection Next(ApplicationSection step)
         {
-            return step == ApplicationStep.Summary ? step : step + 1;
+            return step == ApplicationSection.Summary ? step : step + 1;
         }
 
-        public static ApplicationStep Previous(ApplicationStep step)
+        public static ApplicationSection Previous(ApplicationSection step)
         {
-            return step == ApplicationStep.ApplicantInfo ? step : step - 1;
+            return step == ApplicationSection.ApplicantInformation ? step : step - 1;
         }
 
         public static bool CanWithdraw(ApplicationStatus status)
@@ -39,7 +39,7 @@ namespace Radency_TestAssignment.Domain.Applications
                 || status == ApplicationStatus.Returned;
         }
 
-        public static List<string> ValidateResidences(IReadOnlyCollection<ResidenceHistory> residences)
+        public static List<string> ValidateResidences(List<ResidenceHistory> residences)
         {
             var errors = new List<string>();
 
@@ -69,6 +69,35 @@ namespace Radency_TestAssignment.Domain.Applications
             }
 
             return errors;
+        }
+
+        public static bool CanReview(ApplicationStatus status)
+        {
+            return status == ApplicationStatus.Submitted;
+        }
+
+        public static string? ValidateReview(ReviewOutcome outcome, string? comment)
+        {
+            if (outcome != ReviewOutcome.Approve && string.IsNullOrWhiteSpace(comment))
+                return "A comment is required to return or deny an application.";
+
+            return null;
+        }
+
+        public static ApplicationStatus GetStatus(ReviewOutcome outcome)
+        {
+            return outcome switch
+            {
+                ReviewOutcome.Approve => ApplicationStatus.Approved,
+                ReviewOutcome.Return => ApplicationStatus.Returned,
+                ReviewOutcome.Deny => ApplicationStatus.Denied,
+                _ => throw new ArgumentOutOfRangeException(nameof(outcome))
+            };
+        }
+
+        public static DateOnly GetLeaseEnd(DateOnly start)
+        {
+            return start.AddMonths(12).AddDays(-1);
         }
     }
 }
