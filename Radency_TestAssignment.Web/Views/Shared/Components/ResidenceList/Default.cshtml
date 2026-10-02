@@ -1,0 +1,62 @@
+﻿@model ResidenceListViewModel
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <h5 class="mb-0">Previous residences</h5>
+    @if (!Model.IsReadOnly)
+    {
+        <button type="button" class="btn btn-success me-3"
+                data-modal-url="@Url.Action("Create", "ResidenceHistory", new { applicationID = Model.ApplicationID })">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+    }
+</div>
+
+@if (!Model.Items.Any())
+{
+    <partial name="Lists/EmptyState" model="@("No residences added yet.")" />
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Address</th>
+                <th>Landlord</th>
+                <th>Phone</th>
+                <th>Move in</th>
+                <th>Move out</th>
+                @if (!Model.IsReadOnly)
+                {
+                    <th></th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model.Items)
+            {
+                <tr>
+                    <td>@r.Address</td>
+                    <td>@r.LandlordName</td>
+                    <td>@r.LandlordPhone</td>
+                    <td>@r.MoveInDate?.ToString("yyyy-MM-dd")</td>
+                    <td>@r.MoveOutDate?.ToString("yyyy-MM-dd")</td>
+                    @if (!Model.IsReadOnly)
+                    {
+                        <td class="text-end text-nowrap">
+                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                    title="Edit" aria-label="Edit"
+                                    data-modal-url="@Url.Action("Edit", "ResidenceHistory", new { id = r.ID })">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                    title="Delete" aria-label="Delete"
+                                    data-modal-url="@Url.Action("Delete", "ResidenceHistory", new { id = r.ID })">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}

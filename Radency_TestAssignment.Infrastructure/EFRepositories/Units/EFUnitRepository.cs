@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Radency_TestAssignment.Domain.Entities.Catalog;
+using Radency_TestAssignment.Domain.Enums;
 using Radency_TestAssignment.Domain.Pagination;
 using Radency_TestAssignment.Infrastructure.IRepositories;
 
@@ -21,6 +22,28 @@ namespace Radency_TestAssignment.Infrastructure.EFRepositories
             var result = await GetPagedAsync(query, page);
 
             return result;
+        }
+
+        private static readonly ApplicationStatus[] OpenStatuses =
+        {
+            ApplicationStatus.Draft,
+            ApplicationStatus.Returned,
+            ApplicationStatus.Submitted
+        };
+
+        public async Task<PagedResult<Unit>> GetAvailableUnitsPagedAsync(int userId, DateOnly today, PageRequest page)
+        {
+            var query = DbSet.AsNoTracking()
+                .Include(u => u.Property)
+                .Include(u => u.UnitType)
+                .Include(u => u.Applications
+                    .Where(a => OpenStatuses.Contains(a.Status)
+                             && a.Applicants.Any(x => x.Id == userId)))
+                .Where(u => !u.Leases.Any(l => l.StartDate <= today && today <= l.EndDate))
+                .OrderBy(u => u.Property.Name)
+                .ThenBy(u => u.UnitNumber);
+
+            return await GetPagedAsync(query, page);
         }
 
         public Task<List<UnitType>> GetUnitTypesAsync()

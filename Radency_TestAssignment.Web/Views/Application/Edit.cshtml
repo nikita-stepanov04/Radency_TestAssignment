@@ -1,0 +1,13 @@
+﻿@model ApplicationWizardViewModel
+@{
+    Layout = "_MainLayout";
+}
+
+
+<div id="wizard-host" data-wizard-host class="container mt-2">
+    <h3 class="pb-2">@Model.UnitTitle</h3>
+
+    <partial name="Wizard" model="Model" />
+</div>
+
+<script src="~/js/application-wizard.js"></script>

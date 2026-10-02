@@ -1,0 +1,22 @@
+﻿@model ApplicationWizardViewModel
+
+<fieldset disabled>
+    <h5>Applicant information</h5>
+    <partial name="Sections/ApplicantInfo" for="ApplicantInformation" />
+</fieldset>
+
+<hr />
+
+@await Component.InvokeAsync("ResidenceList", new { applicationID = Model.ID, isReadOnly = true })
+
+@if (Model.Summary.BlockingReasons.Count > 0)
+{
+    <div class="alert alert-warning mt-3">
+        <ul class="mb-0">
+            @foreach (var reason in Model.Summary.BlockingReasons)
+            {
+                <li>@reason</li>
+            }
+        </ul>
+    </div>
+}

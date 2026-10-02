@@ -1,0 +1,62 @@
+﻿@model PagedResult<AvailableUnitListItemDTO>
+@{
+    var pager = new PagerViewModel(
+        Model.Page,
+        Model.TotalPages,
+        p => Url.Action("AvailableUnitsList", "Unit", new { page = p }));
+}
+
+@if (!Model.Items.Any())
+{
+    <partial name="Lists/EmptyState" model="@("No available units right now.")" />
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Unit</th>
+                <th>Type</th>
+                <th>Bedrooms</th>
+                <th>Monthly rent</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var u in Model.Items)
+            {
+                <tr>
+                    <td>
+                        <div class="fw-semibold">@u.PropertyName</div>
+                        <div class="text-muted small">@u.City, @u.Address</div>
+                    </td>
+                    <td>@u.UnitNumber</td>
+                    <td>@u.UnitType</td>
+                    <td>@u.Bedrooms</td>
+                    <td>@u.MonthlyRent.ToString("C2")</td>
+                    <td class="text-end">
+                        @if (u.ExistingApplicationId is int applicationId)
+                        {
+                            <a class="btn btn-sm btn-outline-primary"
+                               asp-controller="Application" asp-action="Edit" asp-route-id="@applicationId">
+                                <i class="fa-solid fa-arrow-right me-1"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <form asp-controller="Application" asp-action="Start" method="post" class="d-inline">
+                                <input type="hidden" name="unitId" value="@u.ID" />
+                                <button type="submit" class="btn btn-sm btn-primary">
+                                    <i class="fa-solid fa-file-pen me-1"></i>
+                                </button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <partial name="Lists/Pager" model="pager" />
+}

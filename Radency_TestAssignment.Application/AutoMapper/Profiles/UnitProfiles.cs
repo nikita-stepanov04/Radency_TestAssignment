@@ -24,6 +24,14 @@ namespace Radency_TestAssignment.Application.AutoMapper.Profiles
                 .ForMember(dest => dest.Bedrooms, opt => opt.MapFrom(src => src.Bedrooms))
                 .ForMember(dest => dest.MonthlyRent, opt => opt.MapFrom(src => src.MonthlyRent))
                 .ForMember(dest => dest.UnitTypeID, opt => opt.MapFrom(src => src.UnitTypeID));
+
+            CreateMap<Unit, AvailableUnitListItemDTO>()
+                .ForMember(d => d.PropertyName, o => o.MapFrom(s => s.Property.Name))
+                .ForMember(d => d.City, o => o.MapFrom(s => s.Property.City))
+                .ForMember(d => d.Address, o => o.MapFrom(s => s.Property.Address))
+                .ForMember(d => d.UnitType, o => o.MapFrom(s => s.UnitType.Name))
+                .ForMember(d => d.ExistingApplicationId,
+                           o => o.MapFrom(s => s.Applications.Select(a => (int?)a.ID).FirstOrDefault()));
         }
     }
 }

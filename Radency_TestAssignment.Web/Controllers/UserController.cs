@@ -66,7 +66,7 @@ namespace Radency_TestAssignment.Web.Controllers
 
                 return View(model);
             }
-            else return RedirectToAction("Index", "Home");
+            else return RedirectToAction("Login", "User");
         }
 
         [HttpPost]

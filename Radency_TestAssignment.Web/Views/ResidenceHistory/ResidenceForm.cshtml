@@ -1,0 +1,15 @@
+﻿@model ModalFormViewModel<ResidenceFormViewModel>
+@{
+    Layout = "Forms/Modals/ModalLayout";
+}
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+@Html.HiddenFor(m => m.FormModel.ID)
+@Html.HiddenFor(m => m.FormModel.ApplicationID)
+
+@Html.EditorFor(m => m.FormModel.Address, "Inputs/DefaultInput")
+@Html.EditorFor(m => m.FormModel.LandlordName, "Inputs/DefaultInput")
+@Html.EditorFor(m => m.FormModel.LandlordPhone, "Inputs/DefaultInput")
+@Html.EditorFor(m => m.FormModel.MoveInDate, "Inputs/DefaultInput")
+@Html.EditorFor(m => m.FormModel.MoveOutDate, "Inputs/DefaultInput")

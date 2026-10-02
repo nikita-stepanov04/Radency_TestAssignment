@@ -13,7 +13,7 @@ namespace Radency_TestAssignment.Web.Controllers
         {
             return User.IsInRole(RoleNames.PropertyManager)
                 ? RedirectToAction("Index", "Property")
-                : RedirectToAction("Index", "Home");
+                : RedirectToAction("Index", "Application");
         }
     }
 }

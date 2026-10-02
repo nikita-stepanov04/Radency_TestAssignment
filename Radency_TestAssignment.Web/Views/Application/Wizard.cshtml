@@ -1,0 +1,55 @@
+﻿@model ApplicationWizardViewModel
+
+<form asp-controller="Application" asp-action="Step" method="post" data-wizard-form>
+    @Html.HiddenFor(m => m.ID)
+    @Html.HiddenFor(m => m.Step)
+
+    @await Component.InvokeAsync("WizardSteps", new { current = Model.Step, saved = Model.SavedSteps })
+
+    @switch (Model.Step)
+    {
+        case ApplicationStep.ApplicantInfo:
+            <partial name="Sections/ApplicantInfo" for="ApplicantInformation" />
+            break;
+        case ApplicationStep.ResidenceHistory:
+            <partial name="Sections/ResidenceHistory" for="ResidenceHistory" />
+            break;
+        case ApplicationStep.Summary:
+            <partial name="Sections/Summary" model="Model" />
+            break;
+    }
+
+    <div class="d-flex justify-content-between mt-4">
+        @if (Model.Step == ApplicationStep.ApplicantInfo)
+        {
+            <span></span>
+        }
+        else if (Model.IsEditable)
+        {
+            <button type="submit" name="command" value="back" formnovalidate class="btn btn-outline-secondary">Back</button>
+        }
+        else
+        {
+            <a asp-action="Edit" asp-route-id="@Model.ID" asp-route-step="@(Model.Step - 1)" class="btn btn-outline-secondary">Back</a>
+        }
+
+        @if (Model.Step == ApplicationStep.Summary)
+        {
+            if (Model.IsEditable)
+            {
+                <button type="submit" name="command" value="submit" class="btn btn-success"
+                        disabled="@(!Model.Summary.CanSubmit)">
+                    Submit application
+                </button>
+            }
+        }
+        else if (Model.IsEditable)
+        {
+            <button type="submit" name="command" value="continue" class="btn btn-primary">Continue</button>
+        }
+        else
+        {
+            <a asp-action="Edit" asp-route-id="@Model.ID" asp-route-step="@(Model.Step + 1)" class="btn btn-primary">Next</a>
+        }
+    </div>
+</form>

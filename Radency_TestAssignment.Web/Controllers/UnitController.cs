@@ -11,16 +11,28 @@ using Radency_TestAssignment.Web.Models.Shared;
 
 namespace Radency_TestAssignment.Web.Controllers
 {
-    [Authorize(Policy = Policies.AuthorizedManagers)]
     public class UnitController(
         IMapper _mapper,
         IUnitBS _unitBS) : Radency_TestAssignmentControllerBase
     {
         [HttpGet]
+        [Authorize(Policy = Policies.AuthorizedAny)]
+        public IActionResult Index() => View();
+
+        [HttpGet]
+        [Authorize(Policy = Policies.AuthorizedAny)]
+        public IActionResult AvailableUnitsList(int page = 1)
+            => ViewComponent(typeof(AvailableUnitsListViewComponent), new { page });
+
+
+
+        [HttpGet]
+        [Authorize(Policy = Policies.AuthorizedManagers)]
         public IActionResult List(int propertyId, int page = 1)
             => ViewComponent(typeof(UnitsListViewComponent), new { propertyId, page });
 
         [HttpGet]
+        [Authorize(Policy = Policies.AuthorizedManagers)]
         public async Task<IActionResult> Create(int propertyID)
         {
             var unitTypes = await _unitBS.GetUnitTypesAsync();
@@ -34,6 +46,7 @@ namespace Radency_TestAssignment.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = Policies.AuthorizedManagers)]
         public async Task<IActionResult> Edit(int id)
         {
             var unitTypes = await _unitBS.GetUnitTypesAsync();
@@ -51,6 +64,7 @@ namespace Radency_TestAssignment.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = Policies.AuthorizedManagers)]
         public async Task<IActionResult> Save([Bind(Prefix = ModalBindingPrefix)] UnitFormViewModel viewModel)
         {
             bool isNew = viewModel.ID == null;
@@ -76,6 +90,7 @@ namespace Radency_TestAssignment.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = Policies.AuthorizedManagers)]
         public async Task<IActionResult> Delete(int id)
         {
             var dto = await _unitBS.GetByIdAsync(id);
@@ -88,6 +103,7 @@ namespace Radency_TestAssignment.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = Policies.AuthorizedManagers)]
         public async Task<IActionResult> Delete([Bind(Prefix = ModalBindingPrefix)] DeleteItemViewModel viewModel)
         {
             await _unitBS.DeleteAsync(viewModel.ID);

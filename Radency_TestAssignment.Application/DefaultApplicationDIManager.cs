@@ -15,6 +15,8 @@ namespace Radency_TestAssignment.Application
 
             services.AddScoped<IUnitBS, UnitBS>();
             services.AddScoped<IPropertyBS, PropertyBS>();
+            services.AddScoped<IApplicationBS, ApplicationBS>();
+            services.AddScoped<IResidenceHistoryBS, ResidenceHistoryBS>();
 
             return services;
         }

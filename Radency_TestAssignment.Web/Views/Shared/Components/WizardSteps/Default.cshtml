@@ -1,0 +1,14 @@
+﻿@model List<WizardStepItemViewModel>
+
+<ol class="list-group list-group-horizontal mb-4">
+    @foreach (var step in Model)
+    {
+        <li class="list-group-item flex-fill @(step.IsCurrent ? "active" : string.Empty)">
+            <span class="fw-semibold">@(((int)step.Step) + 1). @step.Title</span>
+            @if (step.IsSaved)
+            {
+                <span class="badge text-bg-success ms-2">Saved</span>
+            }
+        </li>
+    }
+</ol>

@@ -1,4 +1,4 @@
-{
+﻿{
   "version": "3.0",
   "defaultProvider": "cdnjs",
   "libraries": [
@@ -28,10 +28,12 @@
       ]
     },
     {
+      "provider": "cdnjs",
       "library": "bootstrap@5.3.8",
       "destination": "wwwroot/lib/bootstrap/",
       "files": [
         "js/bootstrap.min.js",
+        "css/bootstrap.min.css",
         "js/bootstrap.bundle.min.js"
       ]
     }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Radency_TestAssignment.Web.Models.Shared;
+using System.Security.Claims;
 
 namespace Radency_TestAssignment.Web.Controllers
 {
@@ -24,5 +25,7 @@ namespace Radency_TestAssignment.Web.Controllers
         }
 
         public const string ModalBindingPrefix = nameof(ModalFormViewModel<>.FormModel);
+
+        public int UserID => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
     }
 }

@@ -59,6 +59,16 @@ namespace Radency_TestAssignment.Application.BusinessServices
             return new PagedResult<UnitListItemDTO>(units, res.TotalCount, res.Page, res.PageSize);
         }
 
+        public async Task<PagedResult<AvailableUnitListItemDTO>> GetAvailablePagedAsync(int userId, PageRequest page)
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            var res = await _unitRep.GetAvailableUnitsPagedAsync(userId, today, page);
+            var units = _mapper.Map<List<AvailableUnitListItemDTO>>(res.Items);
+
+            return new PagedResult<AvailableUnitListItemDTO>(units, res.TotalCount, res.Page, res.PageSize);
+        }
+
         public Task<List<UnitType>> GetUnitTypesAsync()
         {
             return _unitRep.GetUnitTypesAsync();

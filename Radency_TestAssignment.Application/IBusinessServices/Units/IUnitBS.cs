@@ -11,6 +11,7 @@ namespace Radency_TestAssignment.Application.IBusinessServices
         Task DeleteAsync(int id);
         Task<Unit?> GetByIdAsync(int id);
         Task<PagedResult<UnitListItemDTO>> GetPagedAsync(int propID, PageRequest page);
+        Task<PagedResult<AvailableUnitListItemDTO>> GetAvailablePagedAsync(int userId, PageRequest page);
         Task<List<UnitType>> GetUnitTypesAsync();
         Task SeedUnitsAsync();
     }
